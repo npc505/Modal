@@ -10,6 +10,7 @@ import { BtnGreen } from "../../src/components/BtnGreen";
 import { useState, useCallback } from "react"
 import { useSmartContract } from "../../src/lib/providers/SmartContractProvider";
 import { useAccount, useContractWrite, usePrepareContractWrite } from "wagmi";
+import Modal from 'react-bootstrap/Modal';
 
 const ProfileImage = styled.img`
   border-radius: 50%;
@@ -29,6 +30,7 @@ const ContainerW50 = styled(Row)`
 export default function Investment() {
     const { address } = useAccount()
     const [amount, setAmount] = useState(0)
+    const [show, setShow] = useState(false);
     //const { write } = useSmartContract();
     /*const mint = useCallback(()=>{
         write("mint", [address, amount , 0])
@@ -71,6 +73,8 @@ export default function Investment() {
   return(
     <>
       <ContainerW50 className="mx-auto border p-5 mt-5">
+
+      
         <h1 className="fw-bold h3">Antes de Invertir</h1>
         <p>
             Tienes que completar unos pasos para asegurarnos que todo salga bien.
@@ -84,15 +88,89 @@ export default function Investment() {
                 <p>
                     Esta verificación es conducida por una compañia independiente para asegurarnos de cumplir con las normas y regulaciones.
                 </p>
-                <BtnGreen>Completar</BtnGreen>
+                <BtnGreen variant="primary" onClick={() => setShow(true)}>Completar</BtnGreen>
+                <Modal
+        show={show}
+        onHide={() => setShow(false)}
+        dialogClassName="modal-dialog modal-xl"
+        aria-labelledby="example-custom-modal-styling-title"
+      >
+
+        <Modal.Body>
+        <h1 className="fw-bold h3">Antes de Invertir</h1>
+        <p>
+            Tienes que completar unos pasos para asegurarnos que todo salga bien.
+        </p>
+        <div class="row">
+            <div class="col-md-4">
+            <TbWorld className="rounded-circle p-2 mb-4" size={42} color={'#FEFEFE'} style={{backgroundColor: '#BEB024'}} />
+                <p className="fw-bold">
+                    Verificación KYC
+                </p>
+                <p>
+                    Esta verificación es conducida por una compañia independiente para asegurarnos de cumplir con las normas y regulaciones.
+                </p>
+                <BtnGreen>Descargar</BtnGreen>
+                <br/><br/><br/><br/>
+                <b>Sube tu documento completado</b>
+                <ContainerW50 className="mx-auto border p-5 mt-5">
+                <label htmlFor="filePicker" style={{ background:"white", padding:"10px 20px", cursor:"pointer"}}>
+                Subir
+                </label>
+                <input id="filePicker" style={{visibility:"hidden"}} type={"file"}></input>
+                    </ContainerW50>
+                    <br/><br/>
+                <BtnGreen>Subir</BtnGreen>
+
+                    
+            </div>
+            <div class="col-md-4">
+            <BsBricks className="rounded-circle p-2 mb-4" size={42} color={'#FEFEFE'} style={{backgroundColor: '#BEB024'}} />
+                <p className="fw-bold">
+                    Solicitud de inversión
+                </p>
+                <p>
+                    Este documento se requiere para solicitar la inversión.
+                </p>
+                <br/>
+                <BtnGreen>Aceptar</BtnGreen>
+                <br/><br/><br/><br/>
+                
+                <b>Sube tu documento completado</b>
+                <ContainerW50 className="mx-auto border p-5 mt-5">
+                <label htmlFor="filePicker" style={{ background:"white", padding:"10px 20px", cursor:"pointer"}}>
+                Subir
+                </label>
+                <input id="filePicker" style={{visibility:"hidden"}} type={"file"}></input>
+                    </ContainerW50>
+                    <br/><br/>
+                    <BtnGreen>Subir</BtnGreen>
+                    <br/><br/><br/><br/><br/>
+                    <div class="text-center">
+                    <BtnGreen>Subir</BtnGreen>
+                    </div>
+            </div>
+            <div class="col-md-4">
+            <Form.Group className="mb-3" controlId="info">
+                <br/>
+                  <Form.Control type="text" placeholder="Nombre Completo" />
+                  <br/><br/>
+                  <Form.Control type="text" placeholder="RFC" />
+                </Form.Group>
+            </div>
+          </div>
+          
+          
+        </Modal.Body>
+      </Modal>
             </Col>
             <Col lg={6}>
                 <BsBricks className="rounded-circle p-2 mb-4" size={42} color={'#FEFEFE'} style={{backgroundColor: '#BEB024'}} />
                 <p className="fw-bold">
-                    Aceptar terminos & condiciones
+                    Aceptar términos & condiciones
                 </p>
                 <p>
-                    Estos son todos los terminos y condiciones relevantes para la obra y la distribucion de la ganancia on-chain.
+                    Estos son todos los términos y condiciones relevantes para la obra y la distribución de la ganancia on-chain.
                 </p>
                 <BtnGreen>Aceptar</BtnGreen>
             </Col>
