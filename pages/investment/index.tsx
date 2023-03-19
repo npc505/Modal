@@ -1,4 +1,4 @@
-import "slick-carousel/slick/slick.css"; 
+import "slick-carousel/slick/slick.css";
 import "slick-carousel/slick/slick-theme.css";
 import styled from 'styled-components';
 import { Col, Container, Row, Button, Badge, Form, Stack } from 'react-bootstrap';
@@ -7,10 +7,12 @@ import { BsBricks } from "react-icons/bs";
 import { HiArrowsUpDown } from "react-icons/hi2";
 import TokenCard from "../../src/components/TokenCard";
 import { BtnGreen } from "../../src/components/BtnGreen";
-import { useState, useCallback } from "react"
+import { useState, useCallback, ChangeEvent } from "react"
 import { useSmartContract } from "../../src/lib/providers/SmartContractProvider";
 import { useAccount, useContractWrite, usePrepareContractWrite } from "wagmi";
 import Modal from 'react-bootstrap/Modal';
+import PdfDownloadLink from "../../src/components/PdfDownload";
+import axios from "axios";
 
 const ProfileImage = styled.img`
   border-radius: 50%;
@@ -27,10 +29,29 @@ const ContainerW50 = styled(Row)`
   }
 `;
 
+function handleFileUpload(event: React.ChangeEvent<HTMLInputElement>) {
+    const file = event.target.files?.[0];
+    if (file) {
+      const reader = new FileReader();
+      reader.onload = () => {
+        const fileContents = reader.result as ArrayBuffer;
+        const formData = new FormData();
+        formData.append("pdfFile", new Blob([fileContents], { type: "application/pdf" }), "file.pdf");
+        axios.post("http://localhost:3008/upload", formData)
+          .then(response => console.log("Upload successful!", response))
+          .catch(error => console.error("Upload error:", error));
+      };
+      reader.readAsArrayBuffer(file);
+    }
+  }
+
 export default function Investment() {
     const { address } = useAccount()
     const [amount, setAmount] = useState(0)
     const [show, setShow] = useState(false);
+    const [rfcText, rfcSetText] = useState("");
+    const [nameText,nameSetText] = useState("");
+
     //const { write } = useSmartContract();
     /*const mint = useCallback(()=>{
         write("mint", [address, amount , 0])
@@ -38,6 +59,16 @@ export default function Investment() {
         .catch((e) => console.error(e))
     },[write, address, amount])
     */
+    const handleRFC = (event: React.ChangeEvent<HTMLInputElement>) => {
+        const enteredRFC = event.target.value;
+        rfcSetText(enteredRFC);
+      }
+
+      const handleName = (event: ChangeEvent<HTMLInputElement>) => {
+        const enteredName = event.target.value;
+        nameSetText(enteredName);
+      }
+
     const { config } = usePrepareContractWrite({
         address: '0x7E5d1bd04280E1Ca2c5Aa2567fA5184094Fc87E5',
         abi: [
@@ -74,7 +105,7 @@ export default function Investment() {
     <>
       <ContainerW50 className="mx-auto border p-5 mt-5">
 
-      
+
         <h1 className="fw-bold h3">Antes de Invertir</h1>
         <p>
             Tienes que completar unos pasos para asegurarnos que todo salga bien.
@@ -110,7 +141,7 @@ export default function Investment() {
                 <p>
                     Esta verificación es conducida por una compañia independiente para asegurarnos de cumplir con las normas y regulaciones.
                 </p>
-                <BtnGreen>Descargar</BtnGreen>
+                <PdfDownloadLink formData = {{field1: nameText, field2: rfcText}}></PdfDownloadLink>
                 <br/><br/><br/><br/>
                 <b>Sube tu documento completado</b>
                 <ContainerW50 className="mx-auto border p-5 mt-5">
@@ -122,7 +153,7 @@ export default function Investment() {
                     <br/><br/>
                 <BtnGreen>Subir</BtnGreen>
 
-                    
+
             </div>
             <div class="col-md-4">
             <BsBricks className="rounded-circle p-2 mb-4" size={42} color={'#FEFEFE'} style={{backgroundColor: '#BEB024'}} />
@@ -135,7 +166,7 @@ export default function Investment() {
                 <br/>
                 <BtnGreen>Aceptar</BtnGreen>
                 <br/><br/><br/><br/>
-                
+
                 <b>Sube tu documento completado</b>
                 <ContainerW50 className="mx-auto border p-5 mt-5">
                 <label htmlFor="filePicker" style={{ background:"white", padding:"10px 20px", cursor:"pointer"}}>
@@ -144,6 +175,7 @@ export default function Investment() {
                 <input id="filePicker" style={{visibility:"hidden"}} type={"file"}></input>
                     </ContainerW50>
                     <br/><br/>
+                    <input type="file" accept="application/pdf" onChange={handleFileUpload} />
                     <BtnGreen>Subir</BtnGreen>
                     <br/><br/><br/><br/><br/>
                     <div class="text-center">
@@ -153,14 +185,14 @@ export default function Investment() {
             <div class="col-md-4">
             <Form.Group className="mb-3" controlId="info">
                 <br/>
-                  <Form.Control type="text" placeholder="Nombre Completo" />
+                  <Form.Control onChange={(e) => {handleName(e as any)}} type="text" placeholder="Nombre Completo" />
                   <br/><br/>
-                  <Form.Control type="text" placeholder="RFC" />
+                  <Form.Control onChange={(e) => {handleRFC(e as any)}} type="text" placeholder="RFC" />
                 </Form.Group>
             </div>
           </div>
-          
-          
+
+
         </Modal.Body>
       </Modal>
             </Col>
